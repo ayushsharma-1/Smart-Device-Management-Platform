@@ -1,0 +1,27 @@
+version: '3.8'
+
+# Development override for docker-compose
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  app:
+    build:
+      context: .
+      target: builder  # Use builder stage for development
+    env_file:
+      - .env  # Use local .env for development
+    environment:
+      NODE_ENV: development
+      DB_HOST: localhost  # Connect to host database for development
+    volumes:
+      - ./src:/app/src  # Live reload for development
+      - ./logs:/app/logs
+    ports:
+      - "3001:3001"  # Use development port
+    command: ["npm", "run", "dev"]  # Use nodemon for development
+    depends_on: []  # Don't wait for postgres in dev mode
+
+  # Remove postgres dependency for development (use host database)
+  postgres:
+    profiles:
+      - production  # Only start postgres in production profile

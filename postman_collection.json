@@ -1,0 +1,596 @@
+{
+  "info": {
+    "name": "Smart Device Management Platform API",
+    "description": "Complete API collection for the Smart Device Management Platform",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "device_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "User Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"SecurePass123\",\n  \"role\": \"user\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/signup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "signup"]
+            },
+            "description": "Register a new user account"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"SecurePass123\",\n  \"role\": \"user\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/signup",
+                  "host": ["{{base_url}}"],
+                  "path": ["auth", "signup"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"success\": true,\n  \"message\": \"User registered successfully\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"role\": \"user\",\n    \"created_at\": \"2025-08-18T10:00:00.000Z\",\n    \"updated_at\": \"2025-08-18T10:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.token) {",
+                  "        pm.collectionVariables.set('auth_token', response.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login with email and password to get JWT token"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/login",
+                  "host": ["{{base_url}}"],
+                  "path": ["auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"role\": \"user\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Get current user profile information"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Device Management",
+      "item": [
+        {
+          "name": "Register New Device",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.device && response.device.id) {",
+                  "        pm.collectionVariables.set('device_id', response.device.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Living Room Light\",\n  \"type\": \"light\",\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/devices",
+              "host": ["{{base_url}}"],
+              "path": ["devices"]
+            },
+            "description": "Register a new device"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Living Room Light\",\n  \"type\": \"light\",\n  \"status\": \"active\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/devices",
+                  "host": ["{{base_url}}"],
+                  "path": ["devices"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"success\": true,\n  \"device\": {\n    \"id\": \"d1692356400123\",\n    \"name\": \"Living Room Light\",\n    \"type\": \"light\",\n    \"status\": \"active\",\n    \"last_active_at\": null,\n    \"owner_id\": 1,\n    \"created_at\": \"2025-08-18T10:00:00.123Z\",\n    \"updated_at\": \"2025-08-18T10:00:00.123Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "List All Devices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices",
+              "host": ["{{base_url}}"],
+              "path": ["devices"]
+            },
+            "description": "Get list of all user devices"
+          }
+        },
+        {
+          "name": "List Devices with Filters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices?type=light&status=active&limit=10&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["devices"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "light"
+                },
+                {
+                  "key": "status",
+                  "value": "active"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get filtered list of devices"
+          }
+        },
+        {
+          "name": "Get Device by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}"]
+            },
+            "description": "Get specific device details"
+          }
+        },
+        {
+          "name": "Update Device",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Living Room Light\",\n  \"status\": \"maintenance\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}"]
+            },
+            "description": "Update device details"
+          }
+        },
+        {
+          "name": "Delete Device",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}"]
+            },
+            "description": "Delete a device"
+          }
+        },
+        {
+          "name": "Device Heartbeat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/heartbeat",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "heartbeat"]
+            },
+            "description": "Update device last active timestamp"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"active\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/devices/{{device_id}}/heartbeat",
+                  "host": ["{{base_url}}"],
+                  "path": ["devices", "{{device_id}}", "heartbeat"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Device heartbeat recorded\",\n  \"last_active_at\": \"2025-08-17T10:15:30Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Data & Analytics",
+      "item": [
+        {
+          "name": "Create Device Log",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": \"units_consumed\",\n  \"value\": 2.5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/logs",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "logs"]
+            },
+            "description": "Create a new log entry for a device"
+          }
+        },
+        {
+          "name": "Get Device Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/logs?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "logs"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get device logs with optional filters"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/devices/{{device_id}}/logs?limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["devices", "{{device_id}}", "logs"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"logs\": [\n    {\n      \"id\": \"l1692356400456\",\n      \"event\": \"units_consumed\",\n      \"value\": \"2.50\",\n      \"timestamp\": \"2025-08-17T08:00:00Z\",\n      \"device_id\": \"d1692356400123\",\n      \"created_at\": \"2025-08-17T08:00:00Z\"\n    },\n    {\n      \"id\": \"l1692356400789\",\n      \"event\": \"units_consumed\",\n      \"value\": \"1.20\",\n      \"timestamp\": \"2025-08-17T09:00:00Z\",\n      \"device_id\": \"d1692356400123\",\n      \"created_at\": \"2025-08-17T09:00:00Z\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Device Logs with Filters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/logs?limit=10&event=units_consumed&start_date=2025-08-17T00:00:00Z&end_date=2025-08-18T00:00:00Z",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "logs"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "event",
+                  "value": "units_consumed"
+                },
+                {
+                  "key": "start_date",
+                  "value": "2025-08-17T00:00:00Z"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2025-08-18T00:00:00Z"
+                }
+              ]
+            },
+            "description": "Get device logs with event and date filters"
+          }
+        },
+        {
+          "name": "Get Device Usage (24h)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/usage?range=24h",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "usage"],
+              "query": [
+                {
+                  "key": "range",
+                  "value": "24h"
+                }
+              ]
+            },
+            "description": "Get aggregated usage data for last 24 hours"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/devices/{{device_id}}/usage?range=24h",
+                  "host": ["{{base_url}}"],
+                  "path": ["devices", "{{device_id}}", "usage"],
+                  "query": [
+                    {
+                      "key": "range",
+                      "value": "24h"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"device_id\": \"d1692356400123\",\n  \"total_units_last_24h\": 15.7,\n  \"period\": {\n    \"start\": \"2025-08-17T10:15:30Z\",\n    \"end\": \"2025-08-18T10:15:30Z\",\n    \"range\": \"24h\"\n  },\n  \"log_count\": 8\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Device Usage (7 days)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/usage?range=7d",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "usage"],
+              "query": [
+                {
+                  "key": "range",
+                  "value": "7d"
+                }
+              ]
+            },
+            "description": "Get aggregated usage data for last 7 days"
+          }
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check API health status"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,9 @@
 # Smart Device Management Platform
 
 **Author**: Ayush Sharma  
-**Repository**: https://gith## Technical Stack
+**Repository**: https://github.com/ayushsharma-1/Smart-Device-Management-Platform
+
+## Technical Stack
 
 - **Framework**: Node.js with Express.js
 - **Database**: PostgreSQL with Sequelize ORM  
@@ -698,4 +700,4 @@ The application includes:
 
 ## 📞 Support
 
-For questions or issues, please contact the development team.
+For questions or issues, please contact ayushsharma18001@gmail.com.
